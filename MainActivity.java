@@ -8,14 +8,23 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 public class MainActivity extends AppCompatActivity {
 
     SQLiteDatabase cbrDB;
 
-    int targetStr;
-    int targetAgi;
-    int targetInt;
+    double targetStr;
+    double targetAgi;
+    double targetInt;
+
+    EditText strEdit;
+    EditText agiEdit;
+    EditText intEdit;
+
+    Button goButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +32,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        goButton = (Button) findViewById(R.id.goButton);
+        strEdit = (EditText) findViewById(R.id.strEdit);
+        agiEdit = (EditText) findViewById(R.id.agiEdit);
+        intEdit = (EditText) findViewById(R.id.intEdit);
 
         try {
 
@@ -51,11 +65,7 @@ public class MainActivity extends AppCompatActivity {
             if (c.moveToFirst()) {
 
                 do {
-                    Log.i("Results: ",
-                    c.getString(nameIndex) + " Str:"  +
-                    c.getInt(strIndex) + " Agi:" +
-                    c.getInt(agiIndex) + " Int:" +
-                    c.getInt(intIndex));
+
 
                     c.moveToNext();
 
@@ -65,6 +75,17 @@ public class MainActivity extends AppCompatActivity {
         } catch(Exception e){
             e.printStackTrace();
         }
+
+        goButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                targetStr = Double.valueOf(strEdit.getText().toString());
+                targetAgi = Double.valueOf(agiEdit.getText().toString());
+                targetInt = Double.valueOf(intEdit.getText().toString());
+
+                Log.i("Results: ", String.valueOf(targetAgi + targetStr + targetInt));
+            }
+        });
     }
 
     @Override
