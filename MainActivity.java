@@ -18,11 +18,11 @@ public class MainActivity extends AppCompatActivity {
 
     double targetStr;
     double targetAgi;
-    double targetInt;
+    double targetIntel;
 
     EditText strEdit;
     EditText agiEdit;
-    EditText intEdit;
+    EditText intelEdit;
 
     Button goButton;
 
@@ -36,54 +36,16 @@ public class MainActivity extends AppCompatActivity {
         goButton = (Button) findViewById(R.id.goButton);
         strEdit = (EditText) findViewById(R.id.strEdit);
         agiEdit = (EditText) findViewById(R.id.agiEdit);
-        intEdit = (EditText) findViewById(R.id.intEdit);
-
-        try {
-
-            deleteDatabase("cbrDB");
-
-            cbrDB = this.openOrCreateDatabase("CBR", MODE_PRIVATE, null);
-
-            cbrDB.execSQL("CREATE TABLE IF NOT EXISTS heroes " +
-                    "(name VARCHAR, str DOUBLE(3), agi DOUBLE(3), int DOUBLE(3))");
-
-            cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Warrior', 5.0, 0.0, 0.0) ");
-
-            cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Rogue', 0.0, 5.0, 0.0) ");
-
-            cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Wizard', 0.0, 0.0, 5.0) ");
-
-            Cursor c = cbrDB.rawQuery("SELECT * FROM heroes", null);
-
-            int nameIndex = c.getColumnIndex("name");
-            int strIndex = c.getColumnIndex("str");
-            int agiIndex = c.getColumnIndex("agi");
-            int intIndex = c.getColumnIndex("int");
-
-            c.moveToFirst();
-
-            if (c.moveToFirst()) {
-
-                do {
-
-
-                    c.moveToNext();
-
-                } while (c.moveToNext());
-
-            }
-        } catch(Exception e){
-            e.printStackTrace();
-        }
+        intelEdit = (EditText) findViewById(R.id.intEdit);
 
         goButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                targetStr = Double.valueOf(strEdit.getText().toString());
-                targetAgi = Double.valueOf(agiEdit.getText().toString());
-                targetInt = Double.valueOf(intEdit.getText().toString());
+               targetStr = Double.valueOf(strEdit.getText().toString());
+               targetAgi = Double.valueOf(agiEdit.getText().toString());
+                targetIntel = Double.valueOf(intelEdit.getText().toString());
 
-                Log.i("Results: ", String.valueOf(targetAgi + targetStr + targetInt));
+                createDatabase();
             }
         });
     }
@@ -108,5 +70,81 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void createDatabase() {
+        try {
+
+            deleteDatabase("CBR");
+
+            cbrDB = this.openOrCreateDatabase("CBR", MODE_PRIVATE, null);
+
+            cbrDB.execSQL("CREATE TABLE IF NOT EXISTS heroes " +
+                    "(name VARCHAR, str DOUBLE(3), agi DOUBLE(3), int DOUBLE(3))");
+
+            cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Warrior', 5.0, 0.0, 0.0) ");
+
+            cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Rogue', 0.0, 5.0, 0.0) ");
+
+            cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Wizard', 0.0, 0.0, 5.0) ");
+
+            Cursor c = cbrDB.rawQuery("SELECT * FROM heroes", null);
+
+            int nameIndex = c.getColumnIndex("name");
+            int strIndex = c.getColumnIndex("str");
+            int agiIndex = c.getColumnIndex("agi");
+            int intelIndex = c.getColumnIndex("int");
+
+            c.moveToFirst();
+
+            if (c.moveToFirst()) {
+
+                do {
+
+                    String name = c.getString(nameIndex);
+                    double str = c.getDouble(strIndex);
+                    double agi = c.getDouble(agiIndex);
+                    double intel = c.getDouble(intelIndex);
+
+                    Log.i("Test: ", name + String.valueOf(getSimilarity(str, targetStr, agi, targetAgi, intel, targetIntel)));
+
+                } while (c.moveToNext());
+
+            }
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public double getSimilarity( double str, double strT, double agi, double agiT, double intel, double intelT)
+    {
+        double total = 0;
+        double a = (agi-agiT);
+        double b = (str-strT);
+        double c = (intel-intelT);
+
+        if (a < 0) {
+            total += toPositive(a);
+        } else {
+            total += a;
+        }
+
+        if (b < 0) {
+            total += toPositive(b);
+        } else {
+            total += b;
+        }
+
+        if (c < 0) {
+            total += toPositive(c);
+        } else {
+            total += c;
+        }
+
+        return total;
+    }
+
+    public double toPositive (double x) {
+        return (x * -1.0);
     }
 }
