@@ -126,14 +126,17 @@ public class MainActivity extends AppCompatActivity {
             cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Warrior', 5.0, 0.0, 0.0) ");
             cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Warrior', 4.5, 0.5, 0.0) ");
             cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Warrior', 4.0, 0.0, 1.0) ");
+            cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Warrior', 3.0, 1.5, 0.5) ");
 
             cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Rogue', 0.5, 3.5, 1.0) ");
             cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Rogue', 0.0, 5.0, 0.0) ");
             cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Rogue', 0.5, 4.0, 0.5) ");
+            cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Rogue', 1.5, 3.0, 0.5) ");
 
             cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Wizard', 0.0, 0.0, 5.0) ");
             cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Wizard', 1.0, 0.0, 4.0) ");
             cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Wizard', 0.0, 0.5, 4.5) ");
+            cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Wizard', 0.0, 1.5, 3.5) ");
 
             Cursor c = cbrDB.rawQuery("SELECT * FROM heroes", null);
 
@@ -239,6 +242,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public String highestInt ( int a, int b, int c) {
+
+        warCounter = 0;
+        rogCounter = 0;
+        wizCounter = 0;
 
         int largest = a; String result = "Warrior";
 
