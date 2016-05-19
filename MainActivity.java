@@ -236,7 +236,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        resultText.setText(highestInt(warCounter, rogCounter, wizCounter));
+        String result = highestInt(warCounter, rogCounter, wizCounter);
+        resultText.setText(result);
+
+        //cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('" + result + "'," + targetStr + " ," + targetAgi + "," + targetIntel + ") ");
 
         heroList.clear();
     }
