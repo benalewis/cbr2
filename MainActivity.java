@@ -1,5 +1,7 @@
 package com.benlewis.cbr2;
 
+//TODO print training set it right order & fill list view with test data. 
+
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -43,10 +45,12 @@ public class MainActivity extends AppCompatActivity {
     EditText intelEdit;
 
     TextView resultText;
+    TextView trainingText;
 
     Button goButton;
 
     ArrayList<Hero> heroList = new ArrayList<Hero>();
+    ArrayList<Hero> testList = new ArrayList<Hero>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
         intelWeight = (EditText) findViewById(R.id.intWeight);
 
         resultText = (TextView) findViewById(R.id.resultText);
+        trainingText = (TextView) findViewById(R.id.trainingTest);
 
         goButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,12 +86,25 @@ public class MainActivity extends AppCompatActivity {
 
                     createDatabase();
 
-                    genHero(5, "Warrior");
-                    genHero(5, "Rogue");
-                    genHero(5, "Wizard");
+                    genHero(49, "Warrior");
+                    genHero(49, "Rogue");
+                    genHero(49, "Wizard");
 
                     fillHeroList();
-                    getAnswer();
+
+                    //Takes X amount of test data from the heroList to be used in folding
+                    //the rest is left for training
+                    fillTestList();
+
+                    //getTestData;
+                    //Method to get 10 random bits of data from the list and put it in a 'Test' set
+                    //Print to a ListView
+
+                    //These two methods use a method to organise the values in the list and determine
+                    //using kNN which are the closest three
+                    getAnswer(testList, trainingText, "Test Set: ");
+                    getAnswer(heroList, resultText, "Training Set: ");
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -126,10 +144,10 @@ public class MainActivity extends AppCompatActivity {
             cbrDB.execSQL("CREATE TABLE IF NOT EXISTS heroes " +
                     "(name VARCHAR, str DOUBLE(3), agi DOUBLE(3), int DOUBLE(3))");
 
-            //Test Data
-            cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Warrior', 10.0, 0.0, 0.0) ");
-            cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Rogue', 0.0, 10.0, 0.0) ");
-            cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Wizard', 0.0, 0.0, 10.0) ");
+            //'Perfect Data'
+            cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Warrior', 100.0, 0.0, 0.0) ");
+            cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Rogue', 0.0, 100.0, 0.0) ");
+            cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('Wizard', 0.0, 0.0, 100.0) ");
 
         } catch(Exception e){
             e.printStackTrace();
@@ -176,7 +194,7 @@ public class MainActivity extends AppCompatActivity {
                                  double agi, double agiT, double agiW,
                                  double intel, double intelT, double intW)
     {
-        double divider = ((strW * 10) + (agiW * 10) + (intW * 10) );
+        double divider = ((strW * 100) + (agiW * 100) + (intW * 100) );
         double total = 0;
         double a = (agi-agiT) * agiW;
         double b = (str-strT) * strW;
@@ -211,9 +229,9 @@ public class MainActivity extends AppCompatActivity {
         return (x * -1.0);
     }
 
-    public void getAnswer() {
+    public void getAnswer(ArrayList<Hero> list, TextView textView, String preText) {
 
-        Collections.sort(heroList, new Comparator<Hero>() {
+        Collections.sort(list, new Comparator<Hero>() {
 
             @Override
             public int compare(Hero lhs, Hero rhs) {
@@ -221,13 +239,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Log.i("X", heroList.toString());
+        //Log.i("X", list.toString());
 
         for (int i = 0; i < 3; i++) {
 
-            Log.i("Top " + (i+1) + ": ", heroList.get(i).getHero());
+            Log.i("Top " + (i+1) + ": ", list.get(i).getHero());
 
-            switch (heroList.get(i).getHero()) {
+            switch (list.get(i).getHero()) {
 
                 case "Rogue":
                     rogCounter++;
@@ -242,11 +260,11 @@ public class MainActivity extends AppCompatActivity {
         }
 
         String result = highestInt(warCounter, rogCounter, wizCounter);
-        resultText.setText(result);
+        textView.setText(preText + result);
 
         //cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('" + result + "'," + targetStr + " ," + targetAgi + "," + targetIntel + ") ");
 
-        heroList.clear();
+        list.clear();
     }
 
     public String highestInt ( int a, int b, int c) {
@@ -270,19 +288,19 @@ public class MainActivity extends AppCompatActivity {
         //last value = a - b;
         //insert into database
 
-        int min = 4;
-        int max = 9;
+        int min = 50;
+        int max = 90;
         Random r = new Random();
 
         for (int i = 0; i < entries; i++) {
 
             int i1 = r.nextInt(max - min + 1) + min;
 
-            int i2 = r.nextInt(10 - i1);
+            int i2 = r.nextInt(100 - i1);
 
-            int i3 = r.nextInt(10 - i1 - i2);
+            int i3 = r.nextInt(100 - i1 - i2);
 
-            i1 += (10 - (i1 + i2 + i3));
+            i1 += (100 - (i1 + i2 + i3));
 
             switch (hero) {
                 case "Warrior":
@@ -316,6 +334,22 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("Result: " + hero, i3 + ", " + i2 + ", " + i1);
                     break;
             }
+        }
+    }
+
+    public void fillTestList() {
+
+        testList.clear();
+        Random r = new Random();
+
+        for (int i = 0; i < 10; i++) {
+
+            //Adds data to the test list, removes it from the training set
+
+            int x = r.nextInt(heroList.size());
+
+            testList.add(heroList.get(x));
+            heroList.remove(x);
         }
     }
 }
