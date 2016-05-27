@@ -15,7 +15,7 @@ public class Hero {
 
     @Override
     public String toString() {
-        return ("Hero: " + hero + " Similarity: " + similarity);
+        return ("Hero: " + hero + " Similarity: " + (int) similarity + "%");
     }
 
     public double getSimilarity() {

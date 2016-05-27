@@ -71,24 +71,23 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 try {
-                targetStr = Double.valueOf(strEdit.getText().toString());
-                targetAgi = Double.valueOf(agiEdit.getText().toString());
-                targetIntel = Double.valueOf(intelEdit.getText().toString());
+                    targetStr = Double.valueOf(strEdit.getText().toString());
+                    targetAgi = Double.valueOf(agiEdit.getText().toString());
+                    targetIntel = Double.valueOf(intelEdit.getText().toString());
 
-                strWe = Double.valueOf(strWeight.getText().toString());
-                agiWe = Double.valueOf(agiWeight.getText().toString());
-                intWe = Double.valueOf(intelWeight.getText().toString());
+                    strWe = Double.valueOf(strWeight.getText().toString());
+                    agiWe = Double.valueOf(agiWeight.getText().toString());
+                    intWe = Double.valueOf(intelWeight.getText().toString());
 
-                   createDatabase();
+                    createDatabase();
 
                     genHero(5, "Warrior");
                     genHero(5, "Rogue");
                     genHero(5, "Wizard");
 
-                    fillHeroList(); getAnswer();
-                 }
-
-                catch (Exception e) {
+                    fillHeroList();
+                    getAnswer();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -139,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void fillHeroList() {
 
-        double similarity = 0;
+        double similarity;
 
         Cursor c = cbrDB.rawQuery("SELECT * FROM heroes", null);
 
@@ -177,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
                                  double agi, double agiT, double agiW,
                                  double intel, double intelT, double intW)
     {
+        double divider = ((strW * 10) + (agiW * 10) + (intW * 10) );
         double total = 0;
         double a = (agi-agiT) * agiW;
         double b = (str-strT) * strW;
@@ -200,7 +200,11 @@ public class MainActivity extends AppCompatActivity {
             total += c;
         }
 
-        return total;
+        if (total == 0) {
+            return 0;
+        } else {
+            return Math.round((total / divider) * 100);
+        }
     }
 
     public double toPositive (double x) {
