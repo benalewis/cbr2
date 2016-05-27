@@ -1,6 +1,6 @@
 package com.benlewis.cbr2;
 
-//TODO print training set it right order & fill list view with test data. 
+//TODO print training set it right order & fill list view with test data.
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,8 +11,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -49,6 +51,8 @@ public class MainActivity extends AppCompatActivity {
 
     Button goButton;
 
+    ListView listView;
+
     ArrayList<Hero> heroList = new ArrayList<Hero>();
     ArrayList<Hero> testList = new ArrayList<Hero>();
 
@@ -70,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
 
         resultText = (TextView) findViewById(R.id.resultText);
         trainingText = (TextView) findViewById(R.id.trainingTest);
+
+        listView = (ListView) findViewById(R.id.listView);
 
         goButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,14 +102,10 @@ public class MainActivity extends AppCompatActivity {
                     //the rest is left for training
                     fillTestList();
 
-                    //getTestData;
-                    //Method to get 10 random bits of data from the list and put it in a 'Test' set
-                    //Print to a ListView
-
                     //These two methods use a method to organise the values in the list and determine
                     //using kNN which are the closest three
-                    getAnswer(testList, trainingText, "Test Set: ");
-                    getAnswer(heroList, resultText, "Training Set: ");
+                    getAnswer(testList, trainingText, "Test Set: ", true);
+                    getAnswer(heroList, resultText, "Training Set: ", false);
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -229,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
         return (x * -1.0);
     }
 
-    public void getAnswer(ArrayList<Hero> list, TextView textView, String preText) {
+    public void getAnswer(ArrayList<Hero> list, TextView textView, String preText, Boolean print) {
 
         Collections.sort(list, new Comparator<Hero>() {
 
@@ -261,6 +263,11 @@ public class MainActivity extends AppCompatActivity {
 
         String result = highestInt(warCounter, rogCounter, wizCounter);
         textView.setText(preText + result);
+
+        //Print the test dat to a ListView
+        if (print) {
+            fillListView(list);
+        }
 
         //cbrDB.execSQL("INSERT INTO heroes (name, str, agi, int) VALUES ('" + result + "'," + targetStr + " ," + targetAgi + "," + targetIntel + ") ");
 
@@ -351,5 +358,19 @@ public class MainActivity extends AppCompatActivity {
             testList.add(heroList.get(x));
             heroList.remove(x);
         }
+    }
+
+    public void fillListView(ArrayList<Hero> heroArrayList) {
+
+        ArrayList<String> testStringList = new ArrayList<String>();
+
+        for (int i = 0; i < 10; i++) {
+            testStringList.add(heroArrayList.get(i).toString());
+        }
+
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,
+                testStringList);
+
+        listView.setAdapter(arrayAdapter);
     }
 }
