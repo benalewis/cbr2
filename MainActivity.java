@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
         if (total == 0) {
             return 0;
         } else {
-            return Math.round((total / divider) * 100);
+            return 100.0 - (Math.round((total / divider) * 100));
         }
     }
 
@@ -214,9 +214,10 @@ public class MainActivity extends AppCompatActivity {
     public void getAnswer() {
 
         Collections.sort(heroList, new Comparator<Hero>() {
+
             @Override
             public int compare(Hero lhs, Hero rhs) {
-                return Double.compare(lhs.getSimilarity(), rhs.getSimilarity());
+                return Double.compare(rhs.getSimilarity(), lhs.getSimilarity());
             }
         });
 
